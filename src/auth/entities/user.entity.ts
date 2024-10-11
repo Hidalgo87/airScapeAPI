@@ -11,7 +11,10 @@ export class User {
   })
   email: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    unique: true,
+  })
   username: string;
 
   @Column('text')
