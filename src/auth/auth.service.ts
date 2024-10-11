@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcryptjs from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -13,10 +14,22 @@ export class AuthService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    console.log('createUserDto', createUserDto);
-    const newUser = this.userRepository.create(createUserDto);
-    return this.userRepository.save(newUser);
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const {password, ...userData} = createUserDto;
+      const newUser = this.userRepository.create({
+        password:bcryptjs.hashSync(password, 10),
+        ...userData
+      });
+      await this.userRepository.save(newUser);
+      const {password:_, ...user} = newUser;
+      return user;
+    } catch (error) {
+      if (error.code ==='23505'){
+        throw new BadRequestException(`Email ${createUserDto.email} already exists`)
+      }
+      throw new InternalServerErrorException(`Something was wrong :(`)
+    }
   }
 
   findAll() {
