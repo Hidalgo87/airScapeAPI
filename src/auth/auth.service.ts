@@ -6,13 +6,16 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcryptjs from 'bcryptjs';
 import { LoginDto } from './dto/login-dto.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload';
 
 @Injectable()
 export class AuthService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private jwtService: JwtService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -44,9 +47,10 @@ export class AuthService {
     }
 
     const {password:_, ...rest} = user;
+    const token = this.getJwtToken({id:user.id, username:user.username});
     return{
       user:rest,
-      token: ''
+      token: token
     }
   }
 
@@ -64,5 +68,10 @@ export class AuthService {
 
   remove(id: number) {
     return `This action removes a #${id} auth`;
+  }
+
+  private getJwtToken(payload: JwtPayload){
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 }
