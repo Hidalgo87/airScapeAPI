@@ -12,21 +12,25 @@ import { JwtService } from '@nestjs/jwt';
 import { ImagesService } from '../images/images.service';
 import { v4 as uuid } from 'uuid';
 import { Image } from '../images/interfaces/image.interface';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class ListingsService {
   constructor(
     @InjectRepository(Listing)
     private readonly listingRepository: Repository<Listing>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
     private imageService: ImagesService,
   ) {}
 
   
   async create(createListingDto: CreateListingDto) {
+    let newListing;
     try {
       const { filePhotos, ...newListingDto } = createListingDto;
-      const newListing:Listing = this.listingRepository.create({
+      newListing = this.listingRepository.create({
         ...newListingDto,
       });
       const listingId = newListing.listing_id;
@@ -41,32 +45,84 @@ export class ListingsService {
         console.log('imageUrl', imageUrl);
         if (imageUrl) {
           let image: Image = {
-            listingId: listingId,
-            imageId: imageId,
-            imageUrl: imageUrl,
+            listing_id: listingId,
+            image_id: imageId,
+            image_url: imageUrl,
           };
           listingImages.push(image);
         }
       }
       newListing.photos = listingImages;
-      // FALTA PASAR EL USUARIO (obtenlo desde el token de header) newListing.user = ;
       await this.listingRepository.save(newListing);
+      return await this.listingRepository.findOne({ where: {listing_id:listingId}});
     } catch (error) {
       throw new InternalServerErrorException(`Something was wrong :( ${error}`);
     }
-    return 'This action adds a new listing';
+    return newListing;
+  }
+
+  async findPopularListings(amountListings: number = 8): Promise<Listing[]> {
+    let listings: Listing[] = await this.listingRepository.find();
+    if (listings) {
+      const shuffledListings = listings.sort(() => 0.5 - Math.random());
+      if (amountListings >= listings.length) {
+        return shuffledListings;
+      } else {
+        return shuffledListings.slice(0, amountListings);
+      }
+    }
+    return [];
   }
 
   findAll() {
     return `This action returns all listings`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} listing`;
+  async findOneListing(listing_id: string) {
+    const listing: Listing = await this.listingRepository.findOne({where: {listing_id}});
+    return listing;
   }
 
-  update(id: number, updateListingDto: UpdateListingDto) {
-    return `This action updates a #${id} listing`;
+  async findUserListings(user_id: string) {
+    const user: User = await this.userRepository.findOne({where: {user_id}})
+    const listings: Listing[] = await this.listingRepository.find({where: {user}});
+    return listings;
+  }
+
+  async update(listing_id: string, updateListingDto: UpdateListingDto) {
+    let newListing;
+    try {
+      const { filePhotos, ...newListingDto } = updateListingDto;
+      let newListing:Listing = this.listingRepository.create({
+        ...newListingDto,
+      });
+      
+      const listingId = newListing.listing_id;
+      let listingImages = updateListingDto.photos;
+      for (let file of filePhotos) {
+        let imageId = uuid();
+        let imageUrl = await this.imageService.upload(
+          file,
+          'listings',
+          `${listingId}/${imageId}`,
+        );
+        console.log('imageUrl', imageUrl);
+        if (imageUrl) {
+          let image: Image = {
+            listing_id: listingId,
+            image_id: imageId,
+            image_url: imageUrl,
+          };
+          listingImages.push(image);
+        }
+      }
+      newListing.photos = listingImages;
+      newListing.updatedAt = new Date();
+      await this.listingRepository.update(listing_id, newListing);
+      return await this.listingRepository.findOne({ where: {listing_id}});
+    } catch (error) {
+      throw new InternalServerErrorException(`Something was wrong :( ${error}`);
+    }
   }
 
   remove(id: number) {

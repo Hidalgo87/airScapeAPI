@@ -60,8 +60,8 @@ export class AuthService {
     };
   }
 
-  async findById(userId: number){
-    const users = await this.userRepository.find({where: {user_id:userId}});
+  async findById(user_id: string){
+    const users = await this.userRepository.find({where: {user_id}});
     if (users.length === 0){
       return undefined;
     }

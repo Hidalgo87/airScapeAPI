@@ -28,18 +28,25 @@ export class ListingsController {
   }
 
   @Get()
-  findAll() {
-    return this.listingsService.findAll();
+  findPopularListings() {
+    return this.listingsService.findPopularListings();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listingsService.findOne(+id);
+  findOneListing(@Param('id') id: string) {
+    return this.listingsService.findOneListing(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('user/:id')
+  findUserListings(@Param('id') id: string) {
+    return this.listingsService.findUserListings(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListingDto: UpdateListingDto) {
-    return this.listingsService.update(+id, updateListingDto);
+  update(@Param('id') listing_id: string, @Body() updateListingDto: UpdateListingDto) {
+    return this.listingsService.update(listing_id, updateListingDto);
   }
 
   @Delete(':id')

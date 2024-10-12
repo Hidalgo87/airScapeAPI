@@ -2,11 +2,9 @@ import {
   IsString,
   IsNumber,
   IsArray,
-  IsLatitude,
-  IsLongitude,
   IsPositive,
-  IsOptional,
   Min,
+  IsObject,
 } from 'class-validator';
 import { User } from 'src/auth/entities/user.entity';
 
@@ -45,6 +43,6 @@ export class CreateListingDto {
   @IsPositive()
   maxGuests: number;
 
-  @IsOptional()
+  @IsObject()
   user:User;
 }

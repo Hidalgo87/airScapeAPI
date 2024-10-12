@@ -11,8 +11,8 @@ import { User } from 'src/auth/entities/user.entity';
 
 @Entity()
 export class Listing {
-  @PrimaryGeneratedColumn()
-  listing_id: number;
+  @PrimaryGeneratedColumn('uuid')
+  listing_id: string;
 
   @ManyToOne(
     () => User,
