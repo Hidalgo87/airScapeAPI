@@ -25,12 +25,12 @@ export class AuthController {
   }
 
   @Post('/login')
-  login(@Body() loginDto: LoginDto){
+  login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @Get()
   @UseGuards(AuthGuard)
+  @Get()
   findAll(@Request() request: Request) {
     console.log(request.body);
     return this.authService.findAll();

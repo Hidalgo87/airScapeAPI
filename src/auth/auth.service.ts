@@ -35,7 +35,7 @@ export class AuthService {
     } catch (error) {
       if (error.code === '23505') {
         throw new BadRequestException(
-          `Email ${createUserDto.email} already exists`,
+          `Username ${createUserDto.username} or Email ${createUserDto.email} already exists`,
         );
       }
       throw new InternalServerErrorException(`Something was wrong :(`);
@@ -53,7 +53,7 @@ export class AuthService {
     }
 
     const { password: _, ...rest } = user;
-    const token = this.getJwtToken({ id: user.id, username: user.username });
+    const token = this.getJwtToken({ id: user.user_id, username: user.username });
     return {
       user: rest,
       token: token,
@@ -61,7 +61,7 @@ export class AuthService {
   }
 
   async findById(userId: number){
-    const users = await this.userRepository.find({where: {id:userId}});
+    const users = await this.userRepository.find({where: {user_id:userId}});
     if (users.length === 0){
       return undefined;
     }

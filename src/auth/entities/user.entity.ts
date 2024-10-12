@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Listing } from 'src/features/listings/entities/listing.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  user_id: number;
 
   @Column({
     type: 'text',
@@ -20,6 +21,12 @@ export class User {
   @Column('text')
   password: string;
 
+  @OneToMany(
+    () => Listing,
+    listing => listing.user
+  )
+  listings:Listing[]
+
   @Column({
     type: 'text',
     default:
@@ -35,7 +42,6 @@ export class User {
 
   @Column({
     type: 'boolean',
-    default: false,
   })
   is_owner: boolean;
 

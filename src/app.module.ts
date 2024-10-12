@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ListingsModule } from './features/listings/listings.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -17,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
               autoLoadEntities:true,
               synchronize:true
             })
-    , AuthModule],
+    , AuthModule, ListingsModule],
   controllers: [AppController],
   providers: [AppService],
 })
