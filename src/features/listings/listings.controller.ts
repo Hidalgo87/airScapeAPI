@@ -21,10 +21,9 @@ export class ListingsController {
   @UseGuards(AuthGuard)
   @Post()
   create(
-    @Body() createListingDto: CreateListingDto,
-    @Request() request: Request,
+    @Body() createListingDto: CreateListingDto
   ) {
-    const userId = request.body['user'].user_id;
+    console.log('createListingDto', createListingDto);
     return this.listingsService.create(createListingDto);
   }
 
