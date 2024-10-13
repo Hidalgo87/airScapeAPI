@@ -51,6 +51,6 @@ export class ListingsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.listingsService.remove(+id);
+    return this.listingsService.remove(id);
   }
 }

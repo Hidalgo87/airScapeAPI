@@ -59,7 +59,6 @@ export class ListingsService {
     } catch (error) {
       throw new InternalServerErrorException(`Something was wrong :( ${error}`);
     }
-    return newListing;
   }
 
   async findPopularListings(amountListings: number = 8): Promise<Listing[]> {
@@ -97,7 +96,6 @@ export class ListingsService {
   }
 
   async update(listing_id: string, updateListingDto: UpdateListingDto) {
-    let newListing;
     try {
       const { filePhotos, ...newListingDto } = updateListingDto;
       let newListing: Listing = this.listingRepository.create({
@@ -132,8 +130,11 @@ export class ListingsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} listing`;
+  async remove(listing_id: string) {
+    console.log('this.getListings(', (await this.getListings()).length)
+    const response = await this.listingRepository.delete(listing_id);
+    console.log('this.getListings(', (await this.getListings()).length)
+    return response;
   }
 
   async getListings(): Promise<Listing[]> {
