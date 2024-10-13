@@ -21,5 +21,6 @@ import { AuthService } from 'src/auth/auth.service';
       signOptions: { expiresIn: '60m' },
     }),
   ],
+  exports:[ListingsService]
 })
 export class ListingsModule {}

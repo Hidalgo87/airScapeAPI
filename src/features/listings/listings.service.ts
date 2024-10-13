@@ -25,7 +25,6 @@ export class ListingsService {
     private imageService: ImagesService,
   ) {}
 
-  
   async create(createListingDto: CreateListingDto) {
     let newListing;
     try {
@@ -54,7 +53,9 @@ export class ListingsService {
       }
       newListing.photos = listingImages;
       await this.listingRepository.save(newListing);
-      return await this.listingRepository.findOne({ where: {listing_id:listingId}});
+      return await this.listingRepository.findOne({
+        where: { listing_id: listingId },
+      });
     } catch (error) {
       throw new InternalServerErrorException(`Something was wrong :( ${error}`);
     }
@@ -79,13 +80,19 @@ export class ListingsService {
   }
 
   async findOneListing(listing_id: string) {
-    const listing: Listing = await this.listingRepository.findOne({where: {listing_id}});
+    const listing: Listing = await this.listingRepository.findOne({
+      where: { listing_id },
+    });
     return listing;
   }
 
   async findUserListings(user_id: string) {
-    const user: User = await this.userRepository.findOne({where: {user_id}})
-    const listings: Listing[] = await this.listingRepository.find({where: {user}});
+    const user: User = await this.userRepository.findOne({
+      where: { user_id },
+    });
+    const listings: Listing[] = await this.listingRepository.find({
+      where: { user },
+    });
     return listings;
   }
 
@@ -93,10 +100,10 @@ export class ListingsService {
     let newListing;
     try {
       const { filePhotos, ...newListingDto } = updateListingDto;
-      let newListing:Listing = this.listingRepository.create({
+      let newListing: Listing = this.listingRepository.create({
         ...newListingDto,
       });
-      
+
       const listingId = newListing.listing_id;
       let listingImages = updateListingDto.photos;
       for (let file of filePhotos) {
@@ -119,7 +126,7 @@ export class ListingsService {
       newListing.photos = listingImages;
       newListing.updatedAt = new Date();
       await this.listingRepository.update(listing_id, newListing);
-      return await this.listingRepository.findOne({ where: {listing_id}});
+      return await this.listingRepository.findOne({ where: { listing_id } });
     } catch (error) {
       throw new InternalServerErrorException(`Something was wrong :( ${error}`);
     }
@@ -127,5 +134,10 @@ export class ListingsService {
 
   remove(id: number) {
     return `This action removes a #${id} listing`;
+  }
+
+  async getListings(): Promise<Listing[]> {
+    const listings = await this.listingRepository.find();
+    return listings;
   }
 }

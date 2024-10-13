@@ -3,11 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListingsModule } from './features/listings/listings.module';
+import { SearchModule } from './features/search/search.module';
+
 
 @Module({
-  imports: [ConfigModule.forRoot(), 
+  imports: [HttpModule,
+            ConfigModule.forRoot(), 
             TypeOrmModule.forRoot({
               type:'postgres',
               host:process.env.AP_DB_HOST,
@@ -18,7 +22,7 @@ import { ListingsModule } from './features/listings/listings.module';
               autoLoadEntities:true,
               synchronize:true
             })
-    , AuthModule, ListingsModule],
+    , AuthModule, ListingsModule, SearchModule],
   controllers: [AppController],
   providers: [AppService],
 })
