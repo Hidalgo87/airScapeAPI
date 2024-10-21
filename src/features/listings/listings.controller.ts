@@ -6,13 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { User } from 'src/auth/entities/user.entity';
 
 @Controller('listings')
 export class ListingsController {
@@ -23,8 +23,7 @@ export class ListingsController {
   create(
     @Body() createListingDto: CreateListingDto
   ) {
-    console.log('createListingDto', createListingDto);
-    return this.listingsService.create(createListingDto);
+    this.listingsService.create(createListingDto);
   }
 
   @Get()
@@ -33,20 +32,22 @@ export class ListingsController {
   }
 
   @UseGuards(AuthGuard)
-  @Get(':id')
+  @Get('/details/:id')
   findOneListing(@Param('id') id: string) {
-    return this.listingsService.findOneListing(id);
+    return this.listingsService.findListingDetails(id);
   }
 
   @UseGuards(AuthGuard)
-  @Get('user/:id')
-  findUserListings(@Param('id') id: string) {
-    return this.listingsService.findUserListings(id);
+  @Get('/user')
+  findUserListings(@Body() body) {
+    const user:User = body['user'];
+    return this.listingsService.findUserListings(user);
   }
 
-  @Patch(':id')
-  update(@Param('id') listing_id: string, @Body() updateListingDto: UpdateListingDto) {
-    return this.listingsService.update(listing_id, updateListingDto);
+  @UseGuards(AuthGuard)
+  @Patch()
+  update(@Body() updateListingDto: UpdateListingDto) {
+    return this.listingsService.update(updateListingDto);
   }
 
   @Delete(':id')

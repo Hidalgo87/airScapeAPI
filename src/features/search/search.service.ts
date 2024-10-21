@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { Listing } from '../listings/entities/listing.entity';
 import { ListingsService } from '../listings/listings.service';
+import { BriefListingDto } from '../listings/dto/brief-listing.dto';
 
 @Injectable()
 export class SearchService {
@@ -33,8 +34,8 @@ export class SearchService {
     guestsNumber: number | undefined,
     startDate: string = '',
     endDate: string = '',
-  ): Promise<Listing[]> {
-    let nearbyListings: Listing[] = [];
+  ): Promise<BriefListingDto[]> {
+    let nearbyListings: BriefListingDto[] = [];
 
     if (!cityName && !guestsNumber) {
       return this.listingsService.findPopularListings();
@@ -44,10 +45,10 @@ export class SearchService {
       nearbyListings = await this.getListingsNearby(cityName);
     }
 
-    let guestsNumberListings: Listing[] = [];
+    let guestsNumberListings: BriefListingDto[] = [];
 
     if (guestsNumber) {
-      const listings = await this.listingsService.getListings();
+      const listings = this.listingsService.parseListingsToBriefListings(await this.listingsService.getListings());
       guestsNumberListings = listings.filter(
         (listing) => listing.maxGuests >= guestsNumber,
       );
@@ -63,7 +64,7 @@ export class SearchService {
     return nearbyListings.filter((nearbyListing) =>
       guestsNumberListings.some(
         (guestsNumberListing) =>
-          guestsNumberListing.listing_id === nearbyListing.listing_id,
+          guestsNumberListing.listingId === nearbyListing.listingId,
       ),
     );
   }
@@ -82,7 +83,7 @@ export class SearchService {
       latitude,
       longitude,
     );
-    return response;
+    return this.listingsService.parseListingsToBriefListings(response);
   }
 
   private findNearbyListings(
@@ -129,4 +130,5 @@ export class SearchService {
 
     return response;
   }
+
 }
