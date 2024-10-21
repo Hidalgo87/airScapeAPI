@@ -3,7 +3,6 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Repository } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import * as bcryptjs from 'bcryptjs';
 import { ImagesService } from '../images/images.service';
 
