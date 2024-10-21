@@ -7,6 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListingsModule } from './features/listings/listings.module';
 import { SearchModule } from './features/search/search.module';
+import { ProfileModule } from './features/profile/profile.module';
 
 
 @Module({
@@ -22,7 +23,7 @@ import { SearchModule } from './features/search/search.module';
               autoLoadEntities:true,
               synchronize:true
             })
-    , AuthModule, ListingsModule, SearchModule],
+    , AuthModule, ListingsModule, SearchModule, ProfileModule],
   controllers: [AppController],
   providers: [AppService],
 })

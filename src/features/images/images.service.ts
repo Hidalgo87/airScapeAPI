@@ -7,8 +7,8 @@ export class ImagesService {
 
   constructor() {
     this.supabase = createClient(
-	process.env.AP_BK_URL,
-    process.env.AP_BK_APIKEY,
+      process.env.AP_BK_URL,
+      process.env.AP_BK_APIKEY,
     );
   }
 
@@ -30,7 +30,7 @@ export class ImagesService {
     const folder = 'profile';
     const { data: existingImage, error: checkError } =
       await this.supabase.storage
-        .from('airScapeBKT') 
+        .from('airScapeBKT')
         .list(folder, { search: userId });
 
     if (checkError) {
@@ -45,7 +45,7 @@ export class ImagesService {
       if (deleteError) {
         console.error(
           'Error checking for existing image:',
-          deleteError.message
+          deleteError.message,
         );
       }
     }
