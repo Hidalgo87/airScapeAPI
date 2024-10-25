@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListingsModule } from './features/listings/listings.module';
 import { SearchModule } from './features/search/search.module';
 import { ProfileModule } from './features/profile/profile.module';
+import { BookingsModule } from './features/bookings/bookings.module';
 
 
 @Module({
@@ -23,7 +24,7 @@ import { ProfileModule } from './features/profile/profile.module';
               autoLoadEntities:true,
               synchronize:true
             })
-    , AuthModule, ListingsModule, SearchModule, ProfileModule],
+    , AuthModule, ListingsModule, SearchModule, ProfileModule, BookingsModule],
   controllers: [AppController],
   providers: [AppService],
 })

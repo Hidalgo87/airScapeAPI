@@ -15,7 +15,7 @@ export class ProfileService {
   ) {}
 
   async update(updateProfileDto: UpdateProfileDto) {
-    updateProfileDto.password = bcryptjs.hashSync(
+    const newPassword = bcryptjs.hashSync(
       updateProfileDto.password,
       10,
     );
@@ -28,7 +28,10 @@ export class ProfileService {
 
       newUser = this.userRepository.create({
         profile_picture: url,
-        ...updateProfileDto,
+        email:updateProfileDto.email,
+        password:newPassword,
+        bio:updateProfileDto.bio,
+        ...updateProfileDto.user,
       });
     } else {
       newUser = this.userRepository.create(updateProfileDto);
