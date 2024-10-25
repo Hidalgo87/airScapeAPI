@@ -12,10 +12,7 @@ export class ProfileController {
 
   @UseGuards(AuthGuard)
   @Patch()
-  @UseInterceptors(FileInterceptor('file'))  
-  update(@UploadedFile() file: File, @Body() body) {
-    const updateProfileDto:UpdateProfileDto = JSON.parse(body.data);
-    updateProfileDto.filePhoto = file
+  update(@Body() updateProfileDto:UpdateProfileDto) {
     return this.profileService.update(updateProfileDto);
   }
 }

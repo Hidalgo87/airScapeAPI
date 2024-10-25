@@ -15,28 +15,38 @@ export class ProfileService {
   ) {}
 
   async update(updateProfileDto: UpdateProfileDto) {
-    const newPassword = bcryptjs.hashSync(
-      updateProfileDto.password,
-      10,
-    );
+    if (!updateProfileDto.email){
+      updateProfileDto.email = updateProfileDto.user.email
+    }
+    if (!updateProfileDto.bio){
+      updateProfileDto.bio = updateProfileDto.user.bio
+    }
+    if (!updateProfileDto.password){
+      updateProfileDto.password = updateProfileDto.user.password
+    }
+    const newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
     let newUser: User;
-    if (updateProfileDto.filePhoto) {
+    if (updateProfileDto.photoEncoded) {
       const url = await this.imageService.updateProfilePhoto(
-        updateProfileDto.filePhoto,
+        updateProfileDto.photoEncoded,
         updateProfileDto.user.user_id,
       );
 
       newUser = this.userRepository.create({
-        profile_picture: url,
-        email:updateProfileDto.email,
-        password:newPassword,
-        bio:updateProfileDto.bio,
         ...updateProfileDto.user,
+        profile_picture: url,
+        email: updateProfileDto.email,
+        password: newPassword,
+        bio: updateProfileDto.bio,
       });
     } else {
-      newUser = this.userRepository.create(updateProfileDto);
+      newUser = this.userRepository.create({
+        ...updateProfileDto.user,
+        email: updateProfileDto.email,
+        password: newPassword,
+        bio: updateProfileDto.bio,
+      });
     }
-
     const response = await this.userRepository.update(
       updateProfileDto.user.user_id,
       newUser,

@@ -23,22 +23,22 @@ export class ListingsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
-    private imageService: ImagesService
+    private imageService: ImagesService,
   ) {}
 
   async create(createListingDto: CreateListingDto) {
     let newListing;
     try {
-      const { filePhotos, ...newListingDto } = createListingDto;
+      const { photosEncoded, ...newListingDto } = createListingDto;
       newListing = this.listingRepository.create({
         ...newListingDto,
       });
       const listingId = newListing.listing_id;
       let listingImages = [];
-      for (let file of filePhotos) {
+      for (let photoEncoded of photosEncoded) {
         let imageId = uuid();
         let imageUrl = await this.imageService.upload(
-          file,
+          photoEncoded,
           'listings',
           `${listingId}/${imageId}`,
         );
@@ -59,14 +59,18 @@ export class ListingsService {
     }
   }
 
-  async findPopularListings(amountListings: number = 8): Promise<BriefListingDto[]> {
+  async findPopularListings(
+    amountListings: number = 8,
+  ): Promise<BriefListingDto[]> {
     let listings: Listing[] = await this.listingRepository.find();
     if (listings) {
       const shuffledListings = listings.sort(() => 0.5 - Math.random());
       if (amountListings >= listings.length) {
         return this.parseListingsToBriefListings(shuffledListings);
       } else {
-        return this.parseListingsToBriefListings(shuffledListings.slice(0, amountListings));
+        return this.parseListingsToBriefListings(
+          shuffledListings.slice(0, amountListings),
+        );
       }
     }
     return [];
@@ -92,15 +96,15 @@ export class ListingsService {
 
   async update(updateListingDto: UpdateListingDto) {
     try {
-      const { filePhotos, listingId, ...newListingDto } = updateListingDto;
+      const { photosEncoded, listingId, ...newListingDto } = updateListingDto;
       let newListing: Listing = this.listingRepository.create({
         ...newListingDto,
       });
       let listingImages = updateListingDto.photos;
-      for (let file of filePhotos) {
+      for (let photoEncoded of photosEncoded) {
         let imageId = uuid();
         let imageUrl = await this.imageService.upload(
-          file,
+          photoEncoded,
           'listings',
           `${listingId}/${imageId}`,
         );
@@ -117,16 +121,18 @@ export class ListingsService {
       newListing.photos = listingImages;
       newListing.updatedAt = new Date();
       await this.listingRepository.update(listingId, newListing);
-      return await this.listingRepository.findOne({ where: { listing_id:listingId } });
+      return await this.listingRepository.findOne({
+        where: { listing_id: listingId },
+      });
     } catch (error) {
       throw new InternalServerErrorException(`Something was wrong :( ${error}`);
     }
   }
 
   async remove(listing_id: string) {
-    console.log('this.getListings(', (await this.getListings()).length)
+    console.log('this.getListings(', (await this.getListings()).length);
     const response = await this.listingRepository.delete(listing_id);
-    console.log('this.getListings(', (await this.getListings()).length)
+    console.log('this.getListings(', (await this.getListings()).length);
     return response;
   }
 
@@ -135,9 +141,9 @@ export class ListingsService {
     return listings;
   }
 
-  parseListingsToBriefListings(listings:Listing[]):BriefListingDto[]{
+  parseListingsToBriefListings(listings: Listing[]): BriefListingDto[] {
     let newListings: BriefListingDto[] = [];
-    for (let listing of listings){
+    for (let listing of listings) {
       const briefListingDto: BriefListingDto = {
         listingId: listing.listing_id,
         title: listing.title,
@@ -146,7 +152,7 @@ export class ListingsService {
         calification: 0, // TODO: Get Calification from another table
         maxGuests: listing.maxGuests,
         createdAt: listing.createdAt,
-        user: listing.user
+        user: listing.user,
       };
       newListings.push(briefListingDto);
     }

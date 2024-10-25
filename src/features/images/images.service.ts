@@ -12,10 +12,11 @@ export class ImagesService {
     );
   }
 
-  async upload(file: File, folderName: string, fileName: string) {
+  async upload(photoEncoded: string, folderName: string, fileName: string) {
+    const buffer = Buffer.from(photoEncoded.split(',')[1],'base64');
     const { error } = await this.supabase.storage
       .from('airScapeBKT')
-      .upload(`${folderName}/${fileName}`, file);
+      .upload(`${folderName}/${fileName}`, buffer);
     if (error) {
       alert(error.message);
       return;
@@ -26,7 +27,7 @@ export class ImagesService {
     return data.publicUrl;
   }
 
-  async updateProfilePhoto(file: File, userId: string): Promise<string> {
+  async updateProfilePhoto(photoEncoded: string, userId: string): Promise<string> {
     const folder = 'profile';
     const { data: existingImage, error: checkError } =
       await this.supabase.storage
@@ -49,10 +50,10 @@ export class ImagesService {
         );
       }
     }
-
+    const buffer = Buffer.from(photoEncoded.split(',')[1],'base64');
     const { error } = await this.supabase.storage
       .from('airScapeBKT')
-      .upload(`${folder}/${userId}`, file);
+      .upload(`${folder}/${userId}`, buffer);
     if (error) {
       alert(error.message);
     }

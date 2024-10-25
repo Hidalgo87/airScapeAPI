@@ -13,7 +13,7 @@ export class CreateListingDto {
   title: string;
 
   @IsArray()
-  filePhotos: File[];
+  photosEncoded: string[];
 
   @IsString()
   description: string;
