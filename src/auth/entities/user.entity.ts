@@ -1,3 +1,4 @@
+import { Booking } from 'src/features/bookings/entities/booking.entity';
 import { Listing } from 'src/features/listings/entities/listing.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -21,11 +22,10 @@ export class User {
   @Column('text')
   password: string;
 
-  @OneToMany(
-    () => Listing,
-    listing => listing.user
-  )
-  listings:Listing[]
+  @OneToMany(() => Listing, listing => listing.user)
+  listings: Listing[];
+
+
 
   @Column({
     type: 'text',

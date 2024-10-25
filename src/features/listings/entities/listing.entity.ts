@@ -5,20 +5,20 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Image } from 'src/features/images/interfaces/image.interface';
 import { User } from 'src/auth/entities/user.entity';
+import { Booking } from 'src/features/bookings/entities/booking.entity';
 
 @Entity()
 export class Listing {
   @PrimaryGeneratedColumn('uuid')
   listing_id: string;
 
-  @ManyToOne(
-    () => User,
-    user => user.listings
-  )
+  @ManyToOne(() => User, (user) => user.listings)
   user: User;
+
 
   @Column({
     type: 'text',
