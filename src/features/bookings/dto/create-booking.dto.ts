@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { IsObject, IsString } from 'class-validator';
+import { User } from 'src/auth/entities/user.entity';
 
 export class CreateBookingDto {
   @IsString()
@@ -9,4 +10,7 @@ export class CreateBookingDto {
 
   @IsString()
   endDate: string;
+
+  @IsObject()
+  user: User;
 }

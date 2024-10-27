@@ -19,6 +19,8 @@ export class Listing {
   @ManyToOne(() => User, (user) => user.listings)
   user: User;
 
+  @OneToMany(() => Booking, (booking) => booking.listing)
+  bookings: Booking[];
 
   @Column({
     type: 'text',
