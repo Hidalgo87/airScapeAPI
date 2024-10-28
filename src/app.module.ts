@@ -12,6 +12,7 @@ import { BookingsModule } from './features/bookings/bookings.module';
 import { User } from './auth/entities/user.entity';
 import { Listing } from './features/listings/entities/listing.entity';
 import { Booking } from './features/bookings/entities/booking.entity';
+import { ReviewsModule } from './features/reviews/reviews.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Booking } from './features/bookings/entities/booking.entity';
     SearchModule,
     ProfileModule,
     BookingsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

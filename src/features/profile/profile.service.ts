@@ -15,14 +15,14 @@ export class ProfileService {
   ) {}
 
   async update(updateProfileDto: UpdateProfileDto) {
-    if (!updateProfileDto.email){
-      updateProfileDto.email = updateProfileDto.user.email
+    if (!updateProfileDto.email) {
+      updateProfileDto.email = updateProfileDto.user.email;
     }
-    if (!updateProfileDto.bio){
-      updateProfileDto.bio = updateProfileDto.user.bio
+    if (!updateProfileDto.bio) {
+      updateProfileDto.bio = updateProfileDto.user.bio;
     }
-    if (!updateProfileDto.password){
-      updateProfileDto.password = updateProfileDto.user.password
+    if (!updateProfileDto.password) {
+      updateProfileDto.password = updateProfileDto.user.password;
     }
     const newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
     let newUser: User;

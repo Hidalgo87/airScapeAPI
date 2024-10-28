@@ -7,13 +7,14 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Listing } from 'src/features/listings/entities/listing.entity';
 import { Booking } from 'src/features/bookings/entities/booking.entity';
+import { Review } from 'src/features/reviews/entities/review.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([User, Listing, Booking]),
+    TypeOrmModule.forFeature([User, Listing, Booking, Review]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

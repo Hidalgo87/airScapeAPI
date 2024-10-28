@@ -10,6 +10,7 @@ import {
 import { Image } from 'src/features/images/interfaces/image.interface';
 import { User } from 'src/auth/entities/user.entity';
 import { Booking } from 'src/features/bookings/entities/booking.entity';
+import { Review } from 'src/features/reviews/entities/review.entity';
 
 @Entity()
 export class Listing {
@@ -21,6 +22,9 @@ export class Listing {
 
   @OneToMany(() => Booking, (booking) => booking.listing)
   bookings: Booking[];
+
+  @OneToMany(() => Review, (review) => review.listing)
+  reviews: Review[];
 
   @Column({
     type: 'text',

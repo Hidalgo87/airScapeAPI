@@ -18,19 +18,4 @@ export class SearchController {
   create(@Body() searchListingDto: SearchListingDto) {
     return this.searchService.search(searchListingDto);
   }
-
-  @Get()
-  findAll() {
-    return this.searchService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.searchService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.searchService.remove(+id);
-  }
 }

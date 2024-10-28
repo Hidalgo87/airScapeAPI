@@ -1,5 +1,6 @@
 import { Booking } from 'src/features/bookings/entities/booking.entity';
 import { Listing } from 'src/features/listings/entities/listing.entity';
+import { Review } from 'src/features/reviews/entities/review.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -27,6 +28,9 @@ export class User {
 
   @OneToMany(() => Booking, booking => booking.user)
   bookings: Booking[];
+
+  @OneToMany(() => Review, review => review.user)
+  reviews: Review[];
 
   @Column({
     type: 'text',
