@@ -136,6 +136,13 @@ export class ListingsService {
     return response;
   }
 
+  async getListingById(listingId: string): Promise<Listing | undefined> {
+    const listing = this.listingRepository.findOne({
+      where: { listing_id: listingId },
+    });
+    return listing;
+  }
+
   async getListings(): Promise<Listing[]> {
     const listings = await this.listingRepository.find();
     return listings;
