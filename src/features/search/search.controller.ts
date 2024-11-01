@@ -18,4 +18,14 @@ export class SearchController {
   create(@Body() searchListingDto: SearchListingDto) {
     return this.searchService.search(searchListingDto);
   }
+
+  @Get()
+  search() {
+    return this.searchService.searchListingsAlternative(
+      'Cartagena',
+      4,
+      '2024-10-25',
+      '2024-10-27',
+    );
+  }
 }

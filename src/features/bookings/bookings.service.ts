@@ -39,7 +39,7 @@ export class BookingsService {
     }
     try {
       let newBooking = this.bookingRepository.create({
-        total_price: 6,
+        total_price: 6, // TODO: NO QUEMARLO
         start_date: createBookingDto.startDate,
         end_date: createBookingDto.endDate,
         listing,
