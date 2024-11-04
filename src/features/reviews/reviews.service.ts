@@ -17,6 +17,7 @@ export class ReviewsService {
         listing: { listing_id: createReviewDto.listingId },
         ...createReviewDto,
       });
+      console.log('newReview', newReview);
       await this.reviewRepository.save(newReview);
     } catch (error) {
       throw new InternalServerErrorException(

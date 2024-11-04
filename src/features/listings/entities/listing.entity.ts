@@ -71,4 +71,7 @@ export class Listing {
     default: new Date(),
   })
   updatedAt: Date;
+
+  @Column({ type: 'float4', default: null, nullable: true })
+  rating: number;
 }

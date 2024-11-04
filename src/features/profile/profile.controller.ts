@@ -1,18 +1,40 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UploadedFiles, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  UploadedFiles,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { Express } from 'express';
+import { EwitsGuard } from 'src/auth/guards/ewits.guard';
+import { AuthService } from 'src/auth/auth.service';
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService,
-    
+  constructor(
+    private readonly profileService: ProfileService,
+    private authService: AuthService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @Patch()
-  update(@Body() updateProfileDto:UpdateProfileDto) {
-    return this.profileService.update(updateProfileDto);
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(EwitsGuard)
+  async update(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateProfileDto: UpdateProfileDto,
+    @Req() req: any,
+  ) {
+    const user = req.user;
+    updateProfileDto.user = user;
+    return this.profileService.update(updateProfileDto, file);
   }
 }

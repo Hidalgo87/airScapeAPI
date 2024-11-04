@@ -156,7 +156,7 @@ export class ListingsService {
         title: listing.title,
         photo: listing.photos[0],
         pricePerNight: listing.pricePerNight,
-        calification: 0, // TODO: Get Calification from another table
+        calification: listing.rating, 
         maxGuests: listing.maxGuests,
         createdAt: listing.createdAt,
         user: listing.user,
@@ -165,4 +165,6 @@ export class ListingsService {
     }
     return newListings;
   }
+
+  private getAverageCalification() {}
 }

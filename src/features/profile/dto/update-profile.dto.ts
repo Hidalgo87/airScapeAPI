@@ -14,7 +14,4 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsObject()
   user: User;
-  @IsString()
-  @IsOptional()
-  photoEncoded: string = '';
 }

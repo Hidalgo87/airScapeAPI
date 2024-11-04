@@ -14,7 +14,7 @@ export class ProfileService {
     private imageService: ImagesService,
   ) {}
 
-  async update(updateProfileDto: UpdateProfileDto) {
+  async update(updateProfileDto: UpdateProfileDto, file: Express.Multer.File) {
     if (!updateProfileDto.email) {
       updateProfileDto.email = updateProfileDto.user.email;
     }
@@ -26,9 +26,9 @@ export class ProfileService {
     }
     const newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
     let newUser: User;
-    if (updateProfileDto.photoEncoded) {
+    if (file) {
       const url = await this.imageService.updateProfilePhoto(
-        updateProfileDto.photoEncoded,
+        file,
         updateProfileDto.user.user_id,
       );
 

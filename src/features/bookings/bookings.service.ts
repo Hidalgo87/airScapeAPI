@@ -24,14 +24,16 @@ export class BookingsService {
     const listing: Listing = await this.listingsService.getListingById(
       createBookingDto.listingId,
     );
-    if (
-      !(await this.isAvailable(
-        listing,
+    const response = await this.bookingRepository.query(
+      'SELECT fn_is_listing_available2 ($1::uuid, $2::date, $3::date) as r',
+      [
+        listing.listing_id,
         createBookingDto.startDate,
         createBookingDto.endDate,
-        '',
-      ))
-    ) {
+      ],
+    );
+    const isAvailable = response[0].r;
+    if (!isAvailable) {
       throw new HttpException(
         'The listing is already booked in that dates',
         HttpStatus.BAD_REQUEST,
@@ -39,7 +41,12 @@ export class BookingsService {
     }
     try {
       let newBooking = this.bookingRepository.create({
-        total_price: 6, // TODO: NO QUEMARLO
+        total_price:
+          listing.pricePerNight *
+          this.calculateDaysBetween(
+            new Date(createBookingDto.startDate),
+            new Date(createBookingDto.endDate),
+          ),
         start_date: createBookingDto.startDate,
         end_date: createBookingDto.endDate,
         listing,
@@ -69,14 +76,16 @@ export class BookingsService {
     if (!updateBookingDto.status) {
       updateBookingDto.status = oldBooking.status;
     }
-    if (
-      !(await this.isAvailable(
-        oldBooking.listing,
+    const Fresponse = await this.bookingRepository.query(
+      'SELECT fn_is_listing_available_with_booking ($1::uuid, $2::date, $3::date) as r',
+      [
+        oldBooking.booking_id,
         updateBookingDto.startDate,
         updateBookingDto.endDate,
-        updateBookingDto.bookingId,
-      ))
-    ) {
+      ],
+    );
+    const isAvailable = Fresponse[0].r;
+    if (!isAvailable) {
       throw new HttpException(
         'The listing is already booked in that dates',
         HttpStatus.BAD_REQUEST,
@@ -84,6 +93,12 @@ export class BookingsService {
     }
     let newBooking = this.bookingRepository.create({
       ...oldBooking,
+      total_price:
+        oldBooking.listing.pricePerNight *
+        this.calculateDaysBetween(
+          new Date(updateBookingDto.startDate),
+          new Date(updateBookingDto.endDate),
+        ),
       start_date: updateBookingDto.startDate,
       end_date: updateBookingDto.endDate,
       status: updateBookingDto.status,
@@ -102,45 +117,16 @@ export class BookingsService {
     });
   }
 
-  private async isAvailable(
-    listing: Listing,
-    startDateStr: string,
-    endDateStr: string,
-    bookingId: string = '',
-  ): Promise<boolean> {
-    try {
-      let startDate = new Date(startDateStr);
-      let endDate = new Date(endDateStr);
-      let bookings: Booking[] = [];
-      if (bookingId) {
-        bookings = await this.bookingRepository.findBy({
-          listing: { listing_id: listing.listing_id },
-          booking_id: Not(bookingId),
-          status: 'pending',
-        });
-      } else {
-        bookings = await this.bookingRepository.findBy({
-          listing: { listing_id: listing.listing_id },
-          status: 'pending',
-        });
-      }
-      for (let booking of bookings) {
-        const bookingStartDate = new Date(booking.start_date);
-        const bookingEndDate = new Date(booking.end_date);
-        if (
-          endDate.getTime() >= bookingStartDate.getTime() &&
-          startDate.getTime() <= bookingEndDate.getTime()
-        ) {
-          return Promise.resolve(false);
-        }
-      }
-      return Promise.resolve(true);
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException(
-        `Something was wrong :( ${error}`,
-        error,
+  private calculateDaysBetween(startDate: Date, endDate: Date): number {
+    if (startDate > endDate) {
+      throw new HttpException(
+        'La fecha de inicio debe ser anterior a la fecha de fin',
+        HttpStatus.BAD_REQUEST,
       );
     }
+
+    const diffTime = endDate.getTime() - startDate.getTime();
+
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }
