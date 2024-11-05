@@ -20,7 +20,7 @@ export class SearchService {
     private http: HttpService,
   ) {}
 
-  async search(searchListingDto: SearchListingDto) {
+  async search(searchListingDto: SearchListingDto): Promise<BriefListingDto[]> {
     return await this.searchListings(
       searchListingDto.cityName,
       searchListingDto.guestsNumber || 0,
@@ -64,7 +64,7 @@ export class SearchService {
       .setParameters({ latitude, longitude, guestsNumber }) // Asegúrate de que 'latitude' y 'longitude' están definidas
       .getMany();
     console.log('response', response.length);
-    return response;
+    return this.listingsService.parseListingsToBriefListings(response);
   }
 
   private async getLatitudeLongitude(
