@@ -12,11 +12,16 @@ export class ImagesService {
     );
   }
 
-  async upload(photoEncoded: string, folderName: string, fileName: string) {
-    const buffer = Buffer.from(photoEncoded.split(',')[1], 'base64');
+  async upload(
+    file: Express.Multer.File,
+    folderName: string,
+    fileName: string,
+  ) {
     const { error } = await this.supabase.storage
       .from('airScapeBKT')
-      .upload(`${folderName}/${fileName}`, buffer);
+      .upload(`${folderName}/${fileName}`, file.buffer, {
+        contentType: file.mimetype,
+      });
     if (error) {
       alert(error.message);
       return;

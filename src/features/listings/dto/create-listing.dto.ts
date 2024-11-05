@@ -5,15 +5,17 @@ import {
   IsPositive,
   Min,
   IsObject,
+  IsOptional,
 } from 'class-validator';
 import { User } from 'src/auth/entities/user.entity';
 
 export class CreateListingDto {
+  @IsOptional()
   @IsString()
   title: string;
 
   @IsArray()
-  photosEncoded: string[];
+  files: Express.Multer.File[];
 
   @IsString()
   description: string;
@@ -44,5 +46,5 @@ export class CreateListingDto {
   maxGuests: number;
 
   @IsObject()
-  user:User;
+  user: User;
 }

@@ -22,8 +22,9 @@ export class ProfileService {
       updateProfileDto.bio = updateProfileDto.user.bio;
     }
     if (!updateProfileDto.password) {
-      updateProfileDto.password = updateProfileDto.user.password;
-    }
+      const oldPass = await this.userRepository.find({select: {password:true}, where:{user_id:updateProfileDto.user.user_id}})
+      updateProfileDto.password = oldPass[0].password;
+    } 
     const newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
     let newUser: User;
     if (file) {

@@ -29,16 +29,16 @@ export class ListingsService {
   async create(createListingDto: CreateListingDto) {
     let newListing;
     try {
-      const { photosEncoded, ...newListingDto } = createListingDto;
+      const { files, ...newListingDto } = createListingDto;
       newListing = this.listingRepository.create({
         ...newListingDto,
       });
       const listingId = newListing.listing_id;
       let listingImages = [];
-      for (let photoEncoded of photosEncoded) {
+      for (let file of files) {
         let imageId = uuid();
         let imageUrl = await this.imageService.upload(
-          photoEncoded,
+          file,
           'listings',
           `${listingId}/${imageId}`,
         );
@@ -81,7 +81,17 @@ export class ListingsService {
   }
 
   async findListingDetails(listing_id: string) {
-    const listing: Listing = await this.listingRepository.findOne({
+    const listing = await this.listingRepository
+      .createQueryBuilder('listing')
+      .innerJoinAndSelect('listing.reviews', 'review')
+      .where('listing.listing_id = :listingId', { listingId: listing_id })
+      .getOne();
+    console.log('listing', listing);
+    return listing;
+  }
+
+  async findRawListing(listing_id: string): Promise<Listing> {
+    const listing = await this.listingRepository.findOne({
       where: { listing_id },
     });
     return listing;
@@ -91,20 +101,23 @@ export class ListingsService {
     const listings: Listing[] = await this.listingRepository.findBy({
       user,
     });
-    return listings;
+    const listingBriefs: BriefListingDto[] =
+      this.parseListingsToBriefListings(listings);
+    return listingBriefs;
   }
 
   async update(updateListingDto: UpdateListingDto) {
     try {
-      const { photosEncoded, listingId, ...newListingDto } = updateListingDto;
+      console.log('updateListingDto', updateListingDto);
+      const { files, listingId, ...newListingDto } = updateListingDto;
       let newListing: Listing = this.listingRepository.create({
         ...newListingDto,
       });
-      let listingImages = updateListingDto.photos;
-      for (let photoEncoded of photosEncoded) {
+      let listingImages = updateListingDto.oldPhotos;
+      for (let file of files) {
         let imageId = uuid();
         let imageUrl = await this.imageService.upload(
-          photoEncoded,
+          file,
           'listings',
           `${listingId}/${imageId}`,
         );
@@ -156,7 +169,7 @@ export class ListingsService {
         title: listing.title,
         photo: listing.photos[0],
         pricePerNight: listing.pricePerNight,
-        calification: listing.rating, 
+        calification: listing.rating,
         maxGuests: listing.maxGuests,
         createdAt: listing.createdAt,
         user: listing.user,
