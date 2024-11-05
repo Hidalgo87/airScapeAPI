@@ -4,11 +4,6 @@ import { IsObject, IsString } from 'class-validator';
 import { User } from 'src/auth/entities/user.entity';
 
 export class UpdateBookingDto {
-  @IsString()
-  startDate: string = '';
-
-  @IsString()
-  endDate: string = '';
 
   @IsString()
   bookingId: string;
@@ -16,6 +11,4 @@ export class UpdateBookingDto {
   @IsObject()
   user:User;
 
-  @IsString()
-  status:string = '';
 }

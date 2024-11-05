@@ -65,43 +65,12 @@ export class BookingsService {
     return bookings;
   }
 
-  async update(updateBookingDto: UpdateBookingDto) {
+  async cancel(updateBookingDto: UpdateBookingDto) {
     const oldBooking = await this.getBookingById(updateBookingDto.bookingId);
-    if (!updateBookingDto.startDate) {
-      updateBookingDto.startDate = oldBooking.start_date.toString();
-    }
-    if (!updateBookingDto.endDate) {
-      updateBookingDto.endDate = oldBooking.end_date.toString();
-    }
-    if (!updateBookingDto.status) {
-      updateBookingDto.status = oldBooking.status;
-    }
-    const Fresponse = await this.bookingRepository.query(
-      'SELECT fn_is_listing_available_with_booking ($1::uuid, $2::date, $3::date) as r',
-      [
-        oldBooking.booking_id,
-        updateBookingDto.startDate,
-        updateBookingDto.endDate,
-      ],
-    );
-    const isAvailable = Fresponse[0].r;
-    if (!isAvailable) {
-      throw new HttpException(
-        'The listing is already booked in that dates',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+
     let newBooking = this.bookingRepository.create({
       ...oldBooking,
-      total_price:
-        oldBooking.listing.pricePerNight *
-        this.calculateDaysBetween(
-          new Date(updateBookingDto.startDate),
-          new Date(updateBookingDto.endDate),
-        ),
-      start_date: updateBookingDto.startDate,
-      end_date: updateBookingDto.endDate,
-      status: updateBookingDto.status,
+      status: 'canceled',
     });
     const response = await this.bookingRepository.update(
       updateBookingDto.bookingId,

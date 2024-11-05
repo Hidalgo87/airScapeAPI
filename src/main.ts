@@ -8,9 +8,14 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true
-    })
+      forbidNonWhitelisted: true,
+    }),
   );
+  app.enableCors({
+    origin: 'http://localhost:4200/',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   app.setGlobalPrefix('api');
   app.use(bodyParser.json({ limit: '10mb' }));
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));

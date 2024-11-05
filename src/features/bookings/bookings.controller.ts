@@ -33,7 +33,7 @@ export class BookingsController {
 
   @UseGuards(AuthGuard)
   @Patch()
-  update(@Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingsService.update(updateBookingDto);
+  cancel(@Body() updateBookingDto: UpdateBookingDto) {
+    return this.bookingsService.cancel(updateBookingDto);
   }
 }
