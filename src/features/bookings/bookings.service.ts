@@ -93,6 +93,7 @@ export class BookingsService {
         hostName: booking.listing.user.username,
         bookedAt: booking.created_at,
         propertyTitle: booking.listing.title,
+        listingId: booking.listing.listing_id,
         hostPicture: booking.listing.user.profile_picture,
         price: booking.total_price,
         propertyImage: booking.listing.photos[0].image_url,

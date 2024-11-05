@@ -4,6 +4,7 @@ export class DetailBookingDto {
   hostName: string;
   bookedAt: Date;
   propertyTitle: string;
+  listingId: string;
   hostPicture: string;
   price: number;
   propertyImage: string;
