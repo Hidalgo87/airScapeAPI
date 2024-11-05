@@ -21,11 +21,14 @@ export class ProfileService {
     if (!updateProfileDto.bio) {
       updateProfileDto.bio = updateProfileDto.user.bio;
     }
+    let newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
     if (!updateProfileDto.password) {
-      const oldPass = await this.userRepository.find({select: {password:true}, where:{user_id:updateProfileDto.user.user_id}})
-      updateProfileDto.password = oldPass[0].password;
-    } 
-    const newPassword = bcryptjs.hashSync(updateProfileDto.password, 10);
+      const oldPass = await this.userRepository.find({
+        select: { password: true },
+        where: { user_id: updateProfileDto.user.user_id },
+      });
+      newPassword = oldPass[0].password;
+    }
     let newUser: User;
     if (file) {
       const url = await this.imageService.updateProfilePhoto(
