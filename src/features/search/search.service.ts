@@ -23,7 +23,7 @@ export class SearchService {
   async search(searchListingDto: SearchListingDto) {
     return await this.searchListings(
       searchListingDto.cityName,
-      searchListingDto.guestsNumber,
+      searchListingDto.guestsNumber || 0,
       searchListingDto.startDate,
       searchListingDto.endDate,
     );
