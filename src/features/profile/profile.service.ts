@@ -55,6 +55,6 @@ export class ProfileService {
       updateProfileDto.user.user_id,
       newUser,
     );
-    return response;
+    return newUser;
   }
 }
