@@ -17,13 +17,19 @@ export class Listing {
   @PrimaryGeneratedColumn('uuid')
   listing_id: string;
 
-  @ManyToOne(() => User, (user) => user.listings)
+  @ManyToOne(() => User, (user) => user.listings, { onDelete: 'CASCADE' })
   user: User;
 
-  @OneToMany(() => Booking, (booking) => booking.listing)
+  @OneToMany(() => Booking, (booking) => booking.listing, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   bookings: Booking[];
 
-  @OneToMany(() => Review, (review) => review.listing)
+  @OneToMany(() => Review, (review) => review.listing, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   reviews: Review[];
 
   @Column({
