@@ -67,6 +67,10 @@ export class SearchService {
     return this.listingsService.parseListingsToBriefListings(response);
   }
 
+  async getPopularListings() {
+    return await this.listingsService.findPopularListings();
+  }
+
   private async getLatitudeLongitude(
     cityName: string,
   ): Promise<{ lat: string; lon: string }[]> {

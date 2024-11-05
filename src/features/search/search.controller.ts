@@ -8,6 +8,15 @@ export class SearchController {
 
   @Post()
   create(@Body() searchListingDto: SearchListingDto) {
-    return this.searchService.search(searchListingDto);
+    if (
+      !searchListingDto.cityName &&
+      !searchListingDto.guestsNumber &&
+      !searchListingDto.startDate &&
+      !searchListingDto.endDate
+    ) {
+      return this.searchService.getPopularListings();
+    } else {
+      return this.searchService.search(searchListingDto);
+    }
   }
 }
