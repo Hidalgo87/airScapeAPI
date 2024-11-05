@@ -14,6 +14,7 @@ import { v4 as uuid } from 'uuid';
 import { Image } from '../images/interfaces/image.interface';
 import { User } from 'src/auth/entities/user.entity';
 import { BriefListingDto } from './dto/brief-listing.dto';
+import { DetailsListingDto } from './dto/details-listing.dto';
 
 @Injectable()
 export class ListingsService {
@@ -81,13 +82,35 @@ export class ListingsService {
   }
 
   async findListingDetails(listing_id: string) {
-    const listing = await this.listingRepository
+    const listing: Listing = await this.listingRepository
       .createQueryBuilder('listing')
-      .leftJoinAndSelect('listing.reviews', 'review')
+      .leftJoinAndSelect('listing.reviews', 'review') // Unir reviews
+      .leftJoinAndSelect('listing.user', 'user') // Unir user para obtener el owner
       .where('listing.listing_id = :listingId', { listingId: listing_id })
       .getOne();
+
+    // Aquí puedes acceder directamente a los datos del owner
+    const listingDetail: DetailsListingDto = {
+      ownerName: listing.user.username, // Accedes a username del user relacionado
+      ownerPicture: listing.user.profile_picture,
+      listing_id: listing.listing_id,
+      title: listing.title,
+      photos: listing.photos,
+      description: listing.description,
+      address: listing.address,
+      latitude: listing.latitude,
+      longitude: listing.longitude,
+      pricePerNight: listing.pricePerNight,
+      numBedrooms: listing.numBedrooms,
+      numBathrooms: listing.numBathrooms,
+      maxGuests: listing.maxGuests,
+      createdAt: listing.createdAt,
+      updatedAt: listing.updatedAt,
+      reviews: listing.reviews,
+    };
+
     console.log('listing', listing);
-    return listing;
+    return listingDetail; // Devuelves el detalle del listing con owner info.
   }
 
   async findRawListing(listing_id: string): Promise<Listing> {
