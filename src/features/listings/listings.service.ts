@@ -15,6 +15,7 @@ import { Image } from '../images/interfaces/image.interface';
 import { User } from 'src/auth/entities/user.entity';
 import { BriefListingDto } from './dto/brief-listing.dto';
 import { DetailsListingDto } from './dto/details-listing.dto';
+import { DetailsReview } from '../reviews/dto/details-review.dto';
 
 @Injectable()
 export class ListingsService {
@@ -84,12 +85,21 @@ export class ListingsService {
   async findListingDetails(listing_id: string) {
     const listing: Listing = await this.listingRepository
       .createQueryBuilder('listing')
-      .leftJoinAndSelect('listing.reviews', 'review') // Unir reviews
-      .leftJoinAndSelect('listing.user', 'user') // Unir user para obtener el owner
+      .leftJoinAndSelect('listing.reviews', 'review')
+      .leftJoinAndSelect('review.user', 'reviewUser')
+      .leftJoinAndSelect('listing.user', 'listingUser')
       .where('listing.listing_id = :listingId', { listingId: listing_id })
       .getOne();
 
-    // Aquí puedes acceder directamente a los datos del owner
+    const reviewDetails: DetailsReview[] = [];
+    for (const review of listing.reviews) {
+      reviewDetails.push({
+        userName: review.user.username,
+        profilePicture: review.user.profile_picture,
+        rating: review.rating,
+        comment: review.comment,
+      });
+    }
     const listingDetail: DetailsListingDto = {
       ownerName: listing.user.username, // Accedes a username del user relacionado
       ownerPicture: listing.user.profile_picture,
@@ -106,7 +116,7 @@ export class ListingsService {
       maxGuests: listing.maxGuests,
       createdAt: listing.createdAt,
       updatedAt: listing.updatedAt,
-      reviews: listing.reviews,
+      reviews: reviewDetails,
     };
 
     console.log('listing', listing);

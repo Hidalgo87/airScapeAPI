@@ -1,5 +1,6 @@
 import { User } from 'src/auth/entities/user.entity';
 import { Image } from 'src/features/images/interfaces/image.interface';
+import { DetailsReview } from 'src/features/reviews/dto/details-review.dto';
 import { Review } from 'src/features/reviews/entities/review.entity';
 
 export class DetailsListingDto {
@@ -18,5 +19,5 @@ export class DetailsListingDto {
 	ownerPicture: string;
 	createdAt: Date;
 	updatedAt: Date;
-	reviews: Review[];
+	reviews: DetailsReview[];
 }

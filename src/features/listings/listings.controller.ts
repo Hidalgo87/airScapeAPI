@@ -83,7 +83,7 @@ export class ListingsController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('/:id')
+  @Get('/raw/:id')
   findOneRawListing(@Param('id') id: string) {
     return this.listingsService.findRawListing(id);
   }
