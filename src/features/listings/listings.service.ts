@@ -146,7 +146,7 @@ export class ListingsService {
       let newListing: Listing = this.listingRepository.create({
         ...newListingDto,
       });
-      let listingImages = updateListingDto.oldPhotos;
+      let listingImages = updateListingDto.oldPhotos || [];
       for (let file of files) {
         let imageId = uuid();
         let imageUrl = await this.imageService.upload(
