@@ -83,7 +83,7 @@ export class ListingsService {
   async findListingDetails(listing_id: string) {
     const listing = await this.listingRepository
       .createQueryBuilder('listing')
-      .innerJoinAndSelect('listing.reviews', 'review')
+      .leftJoinAndSelect('listing.reviews', 'review')
       .where('listing.listing_id = :listingId', { listingId: listing_id })
       .getOne();
     console.log('listing', listing);
