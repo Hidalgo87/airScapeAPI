@@ -12,6 +12,7 @@ import { Not, Repository } from 'typeorm';
 import { ListingsService } from '../listings/listings.service';
 import { User } from 'src/auth/entities/user.entity';
 import { Listing } from '../listings/entities/listing.entity';
+import { DetailBookingDto } from './dto/detail-booking.dto';
 
 @Injectable()
 export class BookingsService {
@@ -58,11 +59,15 @@ export class BookingsService {
     }
   }
 
-  async findUserBookings(user: User) {
-    const bookings: Booking[] = await this.bookingRepository.find({
-      where: { user },
-    });
-    return bookings;
+  async findUserBookings(user: User): Promise<DetailBookingDto[]> {
+    const bookings: Booking[] = await this.bookingRepository
+      .createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.listing', 'listing')
+      .leftJoinAndSelect('listing.user', 'listingUser')
+      .where('booking.userUserId = :userId', { userId: user.user_id })
+      .getMany();
+
+    return this.parseBookingsToDetailBookings(bookings);
   }
 
   async cancel(updateBookingDto: UpdateBookingDto) {
@@ -77,6 +82,26 @@ export class BookingsService {
       newBooking,
     );
     return response;
+  }
+
+  private parseBookingsToDetailBookings(bookings: Booking[]) {
+    let detailBookings: DetailBookingDto[] = [];
+    for (const booking of bookings) {
+      const detailBooking: DetailBookingDto = {
+        bookingId: booking.booking_id,
+        status: booking.status,
+        hostName: booking.listing.user.username,
+        bookedAt: booking.created_at,
+        propertyTitle: booking.listing.title,
+        hostPicture: booking.listing.user.profile_picture,
+        price: booking.total_price,
+        propertyImage: booking.listing.photos[0].image_url,
+        bookingStart: booking.start_date,
+        bookingEnd: booking.end_date,
+      };
+      detailBookings.push(detailBooking);
+    }
+    return detailBookings;
   }
 
   private async getBookingById(bookingId: string) {
